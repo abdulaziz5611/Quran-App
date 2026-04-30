@@ -1,15 +1,13 @@
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../const/image_const.dart';
-import '../theme/app_colors.dart';
+import 'package:quran_app/config/app/const/image_const.dart';
+import 'package:quran_app/config/app/const/page_const.dart';
+import 'package:quran_app/config/app/theme/app_colors.dart';
 
 class SplashPage extends StatefulWidget {
-  final Widget child;
-
-  const SplashPage({super.key, required this.child});
+  const SplashPage({super.key});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -20,9 +18,8 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 3), () {
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (context) => widget.child));
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed(PageConst.navigationPage);
     });
   }
 

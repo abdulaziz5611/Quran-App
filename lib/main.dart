@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:quran_app/config/app/navigation_screen/navigation_screen.dart';
 
-import 'config/app/home/home_page.dart';
-import 'config/app/splash/splash_page.dart';
+import 'package:quran_app/config/app/const/page_const.dart';
+import 'package:quran_app/config/app/route/on_generate_route.dart';
+import 'package:quran_app/injection_container.dart' as di;
 
-void main (){
-  runApp(MyApp());
-
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await di.init();
+  runApp(const MyApp());
 }
-class MyApp extends StatefulWidget {
+
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false,
-      home: SplashPage(child: NavigationScreen()),);
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Quran App',
+      onGenerateRoute: OnGenerateRoute.route,
+      initialRoute: PageConst.splashPage,
+    );
   }
 }

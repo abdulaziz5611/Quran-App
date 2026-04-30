@@ -1,74 +1,48 @@
-
 import 'package:flutter/material.dart';
-import 'package:quran_app/config/app/home/home_page.dart';
+
+import 'package:quran_app/config/app/const/page_const.dart';
 import 'package:quran_app/config/app/navigation_screen/navigation_screen.dart';
 import 'package:quran_app/config/app/splash/splash_page.dart';
-import 'package:quran_app/features/ai_assistant/presentation/pages/ai_assistant_page.dart';
-import 'package:quran_app/features/auto_silent/presentation/pages/auto_silent_page.dart';
+import 'package:quran_app/features/home/presentation/pages/home_page.dart';
+import 'package:quran_app/features/listen_quran/presentation/pages/main_quran_page.dart';
+import 'package:quran_app/features/qibla_direction/presentation/pages/main_qibla_page.dart';
 import 'package:quran_app/features/settings/presentation/pages/setting_page.dart';
 import 'package:quran_app/features/weather/presentation/pages/main_weather_page.dart';
 
-import '../const/page_const.dart';
-
-
 class OnGenerateRoute {
   static Route<dynamic>? route(RouteSettings settings) {
-    final args = settings.arguments;
-
     switch (settings.name) {
       case PageConst.splashPage:
-        {
-          return materialBuilder(widget: SplashPage(child:NavigationScreen()));
-        }
-      case PageConst.aiAssistantPage:
-        {
-          return materialBuilder(widget: AiAssistantPage());
-        }
-      case PageConst.autoSilentPage:
-        {
-          return materialBuilder(widget: AutoSilentPage());
-        }
+        return _builder(const SplashPage());
       case PageConst.navigationPage:
-        {
-          return materialBuilder(widget: NavigationScreen());
-        }
-
+        return _builder(const NavigationScreen());
       case PageConst.homePage:
-        {
-          return materialBuilder(widget: HomePage());
-        }
-
-      case PageConst.settingPage:
-        {
-          return materialBuilder(widget: SettingPage());
-        }
+        return _builder(const HomePage());
+      case PageConst.mainQuranPage:
+        return _builder(const MainQuranPage());
+      case PageConst.mainQiblaPage:
+        return _builder(const MainQiblaPage());
       case PageConst.weatherPage:
-        {
-
-        return materialBuilder(widget: MainWeatherPage());
-        }
-
-
-
+        return _builder(const MainWeatherPage());
+      case PageConst.settingPage:
+        return _builder(const SettingPage());
       default:
-        return materialBuilder(widget: ErrorPage());
+        return _builder(const _NotFoundPage());
     }
-    return null;
   }
+
+  static MaterialPageRoute _builder(Widget page) =>
+      MaterialPageRoute(builder: (_) => page);
 }
 
-class ErrorPage extends StatelessWidget {
-  const ErrorPage({super.key});
+class _NotFoundPage extends StatelessWidget {
+  const _NotFoundPage();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Page not found")),
-      body: Center(child: Text("Page not found")),
+      appBar: AppBar(title: const Text('Page not found')),
+      body: const Center(child: Text('Page not found')),
     );
   }
-}
-
-MaterialPageRoute materialBuilder({required Widget widget}) {
-  return MaterialPageRoute(builder: (_) => widget);
 }
