@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
 
 import 'features/location/data/datasources/location_local_data_source.dart';
 import 'features/location/data/repositories/location_repository_impl.dart';
@@ -9,17 +10,23 @@ import 'features/prayer_times/data/repositories/prayer_times_repository_impl.dar
 import 'features/prayer_times/domain/repositories/prayer_times_repository.dart';
 import 'features/prayer_times/domain/usecases/get_today_prayer_times.dart';
 import 'features/prayer_times/presentation/cubit/prayer_times_cubit.dart';
-import 'features/qibla_direction/data/repositories/qibla_repository_impl.dart';
-import 'features/qibla_direction/domain/repositories/qibla_repository.dart';
-import 'features/qibla_direction/domain/usecases/get_qibla_direction.dart';
-import 'features/qibla_direction/presentation/cubit/qibla_cubit.dart';
+import 'features/quran_reader/data/datasources/quran_remote_data_source.dart';
+import 'features/quran_reader/data/repositories/quran_repository_impl.dart';
+import 'features/quran_reader/domain/repositories/quran_repository.dart';
+import 'features/quran_reader/domain/usecases/get_surah_detail.dart';
+import 'features/quran_reader/presentation/cubit/quran_reader_cubit.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  _initExternal();
   _initLocation();
   _initPrayerTimes();
-  _initQibla();
+  _initQuran();
+}
+
+void _initExternal() {
+  sl.registerLazySingleton<http.Client>(() => http.Client());
 }
 
 void _initLocation() {
@@ -51,12 +58,16 @@ void _initPrayerTimes() {
   );
 }
 
-void _initQibla() {
-  sl.registerFactory(() => QiblaCubit(getQiblaDirection: sl()));
+void _initQuran() {
+  sl.registerFactory(() => QuranReaderCubit(getSurahDetail: sl()));
 
-  sl.registerLazySingleton(() => GetQiblaDirection(sl()));
+  sl.registerLazySingleton(() => GetSurahDetail(sl()));
 
-  sl.registerLazySingleton<QiblaRepository>(
-    () => QiblaRepositoryImpl(locationRepository: sl()),
+  sl.registerLazySingleton<QuranRepository>(
+    () => QuranRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<QuranRemoteDataSource>(
+    () => QuranRemoteDataSourceImpl(client: sl()),
   );
 }

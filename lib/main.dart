@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Quran App',
+      title: 'Al-Mubeen',
       onGenerateRoute: OnGenerateRoute.route,
       initialRoute: PageConst.splashPage,
     );

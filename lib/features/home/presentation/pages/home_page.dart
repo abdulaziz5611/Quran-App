@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
+import 'package:quran_app/config/app/const/page_const.dart';
 import 'package:quran_app/config/app/theme/app_colors.dart';
-import 'package:quran_app/features/home/presentation/widgets/date_row.dart';
-import 'package:quran_app/features/home/presentation/widgets/prayer_time_component.dart';
-import 'package:quran_app/features/home/presentation/widgets/salam_component.dart';
-import 'package:quran_app/features/home/presentation/widgets/today_schedule.dart';
+import 'package:quran_app/features/home/presentation/widgets/action_tile.dart';
+import 'package:quran_app/features/home/presentation/widgets/al_mubeen_header.dart';
+import 'package:quran_app/features/home/presentation/widgets/greeting_row.dart';
+import 'package:quran_app/features/home/presentation/widgets/prayer_time_widget.dart';
+import 'package:quran_app/features/home/presentation/widgets/quote_widget.dart';
+import 'package:quran_app/features/home/presentation/widgets/resume_reading_card.dart';
 import 'package:quran_app/features/prayer_times/presentation/cubit/prayer_times_cubit.dart';
 import 'package:quran_app/injection_container.dart';
 
@@ -26,155 +27,117 @@ class HomePage extends StatelessWidget {
 class _HomeView extends StatelessWidget {
   const _HomeView();
 
+  void _comingSoon(BuildContext context, String name) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$name — coming soon'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.black500,
-      appBar: AppBar(
-        backgroundColor: AppColors.green700,
-        title: Text(
-          'Quran App',
-          style: GoogleFonts.nunito(
-            color: AppColors.white500,
-            fontWeight: FontWeight.bold,
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AlMubeenHeader(
+                onBellTap: () => _comingSoon(context, 'Notifications'),
+                onMenuTap: () => Navigator.pushNamed(
+                  context,
+                  PageConst.settingsPage,
+                ),
+                hasUpdates: true,
+              ),
+              const GreetingRow(name: 'Abdullah', ayahsToday: 5),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    PrayerTimeWidget(
+                      onTap: () => _comingSoon(context, 'Prayer Times'),
+                    ),
+                    const SizedBox(height: 14),
+                    ResumeReadingCard(
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        PageConst.quranReaderPage,
+                        arguments: const {'surahNumber': 1},
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _ActionGrid(
+                      onComingSoon: (n) => _comingSoon(context, n),
+                    ),
+                  ],
+                ),
+              ),
+              const QuoteWidget(text: 'Verily, with hardship comes ease.'),
+            ],
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    );
+  }
+}
+
+class _ActionGrid extends StatelessWidget {
+  final void Function(String) onComingSoon;
+
+  const _ActionGrid({required this.onComingSoon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
           children: [
-            const SalamComponent(
-              eng: 'Peace be upon you',
-              arab: 'السَّلاَمُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ',
-              subTitle: 'Continue your spiritual journey with Holy Quran',
+            Expanded(
+              child: ActionTile(
+                icon: Icons.format_list_bulleted,
+                label: 'Juzz Index',
+                onTap: () =>
+                    Navigator.pushNamed(context, PageConst.juzIndexPage),
+              ),
             ),
-            const SizedBox(height: 18),
-            const _SectionTitle('Next Prayer'),
-            const SizedBox(height: 8),
-            const _NextPrayerSection(),
-            const SizedBox(height: 18),
-            const _SectionTitle('Today\'s Schedule'),
-            const SizedBox(height: 8),
-            const _TodayScheduleSection(),
-            const SizedBox(height: 18),
-            const DateRow(),
-            const SizedBox(height: 12),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ActionTile(
+                icon: Icons.format_list_numbered,
+                label: 'Surah Index',
+                onTap: () =>
+                    Navigator.pushNamed(context, PageConst.surahIndexPage),
+              ),
+            ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  final String text;
-  const _SectionTitle(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Text(
-        text,
-        style: GoogleFonts.nunito(
-          color: AppColors.white500,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: ActionTile(
+                icon: Icons.menu_book,
+                label: 'Goto Page',
+                onTap: () =>
+                    Navigator.pushNamed(context, PageConst.gotoPage),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ActionTile(
+                icon: Icons.bookmark,
+                label: 'Bookmarks',
+                onTap: () =>
+                    Navigator.pushNamed(context, PageConst.bookmarksPage),
+              ),
+            ),
+          ],
         ),
-      ),
-    );
-  }
-}
-
-class _NextPrayerSection extends StatelessWidget {
-  const _NextPrayerSection();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<PrayerTimesCubit, PrayerTimesState>(
-      builder: (context, state) {
-        if (state is PrayerTimesLoaded) {
-          final next = state.nextPrayer;
-          return PrayerTimeComponent(
-            prayerNameEng: next.name.english,
-            prayerNameArab: next.name.arabic,
-            prayerTime: DateFormat.jm().format(next.time),
-            iconData: Icons.access_time,
-            remainingTime: _formatRemaining(next.time),
-          );
-        }
-        if (state is PrayerTimesError) {
-          return _StatusCard(child: Text(state.message));
-        }
-        return const _StatusCard(
-          child: SizedBox(
-            height: 22,
-            width: 22,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-        );
-      },
-    );
-  }
-
-  String _formatRemaining(DateTime time) {
-    final diff = time.difference(DateTime.now());
-    if (diff.isNegative) return 'now';
-    final hours = diff.inHours;
-    final minutes = diff.inMinutes.remainder(60);
-    if (hours > 0) return '${hours}h ${minutes}m';
-    return '${minutes}m';
-  }
-}
-
-class _TodayScheduleSection extends StatelessWidget {
-  const _TodayScheduleSection();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<PrayerTimesCubit, PrayerTimesState>(
-      builder: (context, state) {
-        if (state is PrayerTimesLoaded) {
-          return TodayScheduleList(
-            prayerTimes: state.prayerTimes,
-            currentPrayer: state.prayerTimes.currentPrayer(DateTime.now()),
-          );
-        }
-        if (state is PrayerTimesError) {
-          return _StatusCard(child: Text(state.message));
-        }
-        return const _StatusCard(
-          child: SizedBox(
-            height: 22,
-            width: 22,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _StatusCard extends StatelessWidget {
-  final Widget child;
-  const _StatusCard({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 64,
-      decoration: BoxDecoration(
-        color: AppColors.green700,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      alignment: Alignment.center,
-      child: DefaultTextStyle(
-        style: GoogleFonts.nunito(color: AppColors.white500),
-        child: child,
-      ),
+      ],
     );
   }
 }
